@@ -47,7 +47,7 @@ export function each<T, M>(rulesInit: Rule<T, M> | Rules<T, M>): Rule<IterableTy
 }
 
 async function checkSchema<T, M>(schema: ValidatorSchema<T, M>, value: T, target: M): Promise<RuleCheckResult> {
-	const nested: Record<string, RuleCheckResult> = {};
+	const nested: Partial<Record<keyof T, RuleCheckResult>> = {};
 
 	let isValid = true;
 
