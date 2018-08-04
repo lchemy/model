@@ -1,22 +1,16 @@
 import { Rule } from "../rule";
 
 export function matches(pattern: RegExp): Rule<string> {
-	return {
-		name: "matches",
-		check: (value) => pattern.test(value) ? null : {
-			matches: {
-				requiredPattern: pattern,
-				actualValue: value
-			}
+	return (value) => pattern.test(value) ? null : {
+		matches: {
+			requiredPattern: pattern,
+			actualValue: value
 		}
 	};
 }
 
 function wrapRegexpCheck(name: string, pattern: RegExp): Rule<string> {
-	return {
-		name,
-		check: (value) => pattern.test(value) ? null : { [name]: true }
-	};
+	return (value) => pattern.test(value) ? null : { [name]: true };
 }
 
 // http://emailregex.com/, https://www.w3.org/TR/html-markup/input.email.html#input.email.attrs.value.multiple

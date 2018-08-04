@@ -1,16 +1,15 @@
 import { Rule, Rules, checkRules } from "../rule";
 
-const requiredRule: Rule = {
-	name: "required",
+const requiredRule = {
 	check: (value) => value != null ? null : { required: true },
-	checkNull: true
-};
+	nullable: true
+} as Rule;
 export function required(): Rule {
 	return requiredRule;
 }
 
-export function checkIf<T, M>(
-	condition: (value: T, model: M) => boolean,
+export function checkIf<T, M extends object>(
+	condition: (value: T | null | undefined, model: M) => boolean,
 	rulesInit: Rules<T, M> | Rule<T, M>,
 	elseRulesInit?: Rules<T, M> | Rule<T, M>
 ): Rule<T, M> {
@@ -24,25 +23,26 @@ export function checkIf<T, M>(
 	}
 
 	return {
-		name: "checkIf",
 		check: (value, model) => {
-			if (!condition(value, model)) {
-				return elseRules == null ? null : checkRules(elseRules, value, model);
+			if (condition(value, model)) {
+				return checkRules(rules, value, model);
+			} else if (elseRules != null) {
+				return checkRules(elseRules, value, model);
+			} else {
+				return null;
 			}
-			return checkRules(rules, value, model);
 		},
-		checkNull: true
+		nullable: true
 	};
 }
 
-export function checkSwitch<T, M>(
-	mapper: (value: T, model: M) => string,
+export function checkSwitch<T, M extends object>(
+	mapper: (value: T | null | undefined, model: M) => string,
 	ruleSet: { [key: string]: Rules<T, M> | Rule<T, M> | undefined },
 	defaultRulesInit?: Rules<T, M> | Rule<T, M>
 ): Rule<T, M> {
 	return {
-		name: "checkSwitch",
-		check: (value: any, model: M) => {
+		check: (value, model) => {
 			const branch = mapper(value, model);
 
 			let rulesInit = ruleSet[branch];
@@ -57,6 +57,6 @@ export function checkSwitch<T, M>(
 			const rules = Array.isArray(rulesInit) ? rulesInit : [rulesInit];
 			return checkRules(rules, value, model);
 		},
-		checkNull: true
+		nullable: true
 	};
 }

@@ -4,6 +4,4 @@ export * from "./result";
 export { Rule } from "./rule";
 export * from "./validator";
 
-export {
-	rules
-};
+export { rules };

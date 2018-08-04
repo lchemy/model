@@ -7,7 +7,8 @@ describe("validation: schema", () => {
 
 		const rule = {
 			name: "rule",
-			check: ruleFn
+			check: ruleFn,
+			nullable: false
 		};
 
 		const validator = new Validator({});
@@ -31,9 +32,7 @@ describe("validation: schema", () => {
 		expect(normalizedSchema.rule).toBeInstanceOf(Array);
 		expect(normalizedSchema.rule[0]).toBe(rule);
 		expect(normalizedSchema.validator).toBeInstanceOf(Array);
-		expect(normalizedSchema.validator[0].name).toBe("model");
 		expect(normalizedSchema.object).toBeInstanceOf(Array);
-		expect(normalizedSchema.object[0].name).toBe("object");
 		expect(normalizedSchema.empty).toEqual([]);
 	});
 

@@ -1,17 +1,10 @@
 import { BigNumber } from "bignumber.js";
-import * as Immutable from "immutable";
+import Immutable from "immutable";
 
 import { Rule } from "../rule";
 
 function wrapTypeCheck<T>(name: string, fn: (value: T) => boolean): Rule<T> {
-	return {
-		name,
-		check: (value) => {
-			return fn(value) ? null : {
-				[name]: true
-			};
-		}
-	};
+	return (value) => fn(value) ? null : { [name]: true };
 }
 
 const isBooleanRule = wrapTypeCheck<boolean>("isBoolean", (value) => typeof value === "boolean");

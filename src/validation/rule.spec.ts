@@ -6,18 +6,19 @@ describe("validation: rule", () => {
 		expect(await checkRules([
 			rules.required(),
 			rules.isInt()
-		], 1, undefined)).toBeNull();
+		], 1, {})).toBeNull();
 
 		expect(await checkRules([
 			rules.required(),
 			rules.isInt()
-		], undefined as any, undefined)).toEqual({
+		], undefined as any, {})).toEqual({
 			required: true
 		});
 	});
 
 	it("should check if rule object is a rule", () => {
 		expect(isRule(undefined)).toBe(false);
+		expect(isRule(() => { /* noop */ })).toBe(true);
 		expect(isRule({})).toBe(false);
 		expect(isRule({ name: "test" })).toBe(false);
 		expect(isRule({ name: "test", check: "test" })).toBe(false);

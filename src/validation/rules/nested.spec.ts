@@ -1,17 +1,18 @@
 // tslint:disable:no-sparse-arrays
 
-import * as Immutable from "immutable";
+import Immutable from "immutable";
 
+import { getRuleCheck } from "../rule";
 import * as rules from "../rules";
 import { Validator } from "../validator";
 
 describe("validation: nested rules", () => {
 	describe("each", () => {
 		it("should check arrays", async () => {
-			const { check } = rules.each([
+			const check = getRuleCheck(rules.each([
 				rules.min(0),
 				rules.max(1)
-			]);
+			]));
 
 			expect(await check([0, 1], {})).toBeNull();
 
@@ -37,7 +38,7 @@ describe("validation: nested rules", () => {
 		});
 
 		it("should check immutable lists", async () => {
-			const { check } = rules.each(rules.min(0));
+			const check = getRuleCheck(rules.each(rules.min(0)));
 
 			expect(await check(Immutable.List([-2, -1, 0, 1, 2]), {})).toEqual({
 				each: true,
@@ -56,7 +57,7 @@ describe("validation: nested rules", () => {
 		});
 
 		it("should check sets", async () => {
-			const { check } = rules.each(rules.min(0));
+			const check = getRuleCheck(rules.each(rules.min(0)));
 
 			const result = await check(new Set([-2, -1, 0, 1, 2]), {}),
 				nested = result!.nested as any[];
@@ -73,7 +74,7 @@ describe("validation: nested rules", () => {
 		});
 
 		it("should check immutable sets", async () => {
-			const { check } = rules.each(rules.min(0));
+			const check = getRuleCheck(rules.each(rules.min(0)));
 
 			const result = await check(Immutable.Set([-2, -1, 0, 1, 2]), {}),
 				nested = result!.nested as any[];
@@ -90,7 +91,7 @@ describe("validation: nested rules", () => {
 		});
 
 		it("should check objects", async () => {
-			const { check } = rules.each(rules.min(0));
+			const check = getRuleCheck(rules.each(rules.min(0)));
 
 			expect(await check({
 				a: -2,
@@ -118,7 +119,7 @@ describe("validation: nested rules", () => {
 		});
 
 		it("should check maps", async () => {
-			const { check } = rules.each(rules.min(0));
+			const check = getRuleCheck(rules.each(rules.min(0)));
 
 			expect(await check(new Map([
 				["a", -2],
@@ -146,7 +147,7 @@ describe("validation: nested rules", () => {
 		});
 
 		it("should check immutable maps", async () => {
-			const { check } = rules.each(rules.min(0));
+			const check = getRuleCheck(rules.each(rules.min(0)));
 
 			expect(await check(Immutable.Map([
 				["a", -2],
@@ -176,14 +177,10 @@ describe("validation: nested rules", () => {
 
 	describe("object", () => {
 		it("should check objects", async () => {
-			const { check } = rules.object({
-				int: [
-					rules.isInt()
-				],
-				string: [
-					rules.isString()
-				]
-			});
+			const check = getRuleCheck(rules.object({
+				int: rules.isInt(),
+				string: rules.isString()
+			}));
 
 			expect(await check({
 				int: 1,
@@ -210,14 +207,11 @@ describe("validation: nested rules", () => {
 	describe("model", () => {
 		it("should pass the child model to the rules", async () => {
 			const mockCheck = jest.fn().mockReturnValue(null);
-			const { check } = rules.object({
+			const check = getRuleCheck(rules.object({
 				a: rules.model({
-					b: {
-						name: "test",
-						check: mockCheck
-					}
+					b: mockCheck
 				})
-			});
+			}));
 
 			expect(await check({
 				a: {
@@ -236,7 +230,7 @@ describe("validation: nested rules", () => {
 				c: rules.isInt()
 			});
 
-			const { check } = rules.model(validator, ["b"]);
+			const check = getRuleCheck(rules.model(validator, ["b"]));
 
 			expect(await check({
 				b: 1,
@@ -262,7 +256,7 @@ describe("validation: nested rules", () => {
 				c: rules.isInt()
 			});
 
-			const { check } = rules.model(() => validator, ["b"]);
+			const check = getRuleCheck(rules.model(() => validator, ["b"]));
 
 			expect(await check({
 				b: 1,
@@ -283,10 +277,10 @@ describe("validation: nested rules", () => {
 		});
 
 		it("should allow the definition to be a validator schema", async () => {
-			const { check } = rules.model({
+			const check = getRuleCheck(rules.model({
 				b: rules.isInt(),
 				c: rules.isInt()
-			}, ["b"]);
+			}, ["b"]));
 
 			expect(await check({
 				b: 1,
@@ -308,7 +302,7 @@ describe("validation: nested rules", () => {
 
 		it("should throw if provided an invalid validator ref", async () => {
 			expect(() => {
-				rules.model(undefined).check({}, {});
+				getRuleCheck(rules.model(undefined as any))({}, {});
 			}).toThrow();
 		});
 	});

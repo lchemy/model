@@ -1,4 +1,4 @@
-import * as Immutable from "immutable";
+import Immutable from "immutable";
 
 export type IterableType<T = any> = T[] | Immutable.List<T> |
 	Set<T> | Immutable.Set<T> |

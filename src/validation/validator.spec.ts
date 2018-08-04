@@ -1,9 +1,9 @@
 import * as rules from "./rules";
-import { Validator } from "./validator";
+import { createValidator } from "./validator";
 
 describe("validation: validator", () => {
 	it("should validate against a target", async () => {
-		const validator = new Validator({
+		const validator = createValidator({
 			string: [
 				rules.required(),
 				rules.isString()
@@ -18,7 +18,7 @@ describe("validation: validator", () => {
 	});
 
 	it("should be possible to extend a validator", async () => {
-		const parentValidator = new Validator({
+		const parentValidator = createValidator({
 			string: [
 				rules.required(),
 				rules.isString()

@@ -1,9 +1,13 @@
 import { BigNumber } from "bignumber.js";
-import * as Immutable from "immutable";
+import Immutable from "immutable";
 
+import { getRuleCheck } from "../rule";
 import * as rules from "../rules";
 
 describe("validation: type rules", () => {
+	beforeEach(() => BigNumber.DEBUG = true);
+	afterEach(() => BigNumber.DEBUG = false);
+
 	const types = {
 		boolean: true,
 		string: "",
@@ -27,7 +31,7 @@ describe("validation: type rules", () => {
 
 	describe("is boolean", () => {
 		it("should check boolean", () => {
-			const { check } = rules.isBoolean(),
+			const check = getRuleCheck(rules.isBoolean()),
 				failObj = { isBoolean: true };
 			expect(check(types.boolean as any, {})).toBeNull();
 			expect(check(types.string as any, {})).toEqual(failObj);
@@ -52,7 +56,7 @@ describe("validation: type rules", () => {
 
 	describe("is string", () => {
 		it("should check string", () => {
-			const { check } = rules.isString(),
+			const check = getRuleCheck(rules.isString()),
 				failObj = { isString: true };
 			expect(check(types.boolean as any, {})).toEqual(failObj);
 			expect(check(types.string as any, {})).toBeNull();
@@ -77,7 +81,7 @@ describe("validation: type rules", () => {
 
 	describe("is number", () => {
 		it("should check number", () => {
-			const { check } = rules.isNumber(),
+			const check = getRuleCheck(rules.isNumber()),
 				failObj = { isNumber: true };
 			expect(check(types.boolean as any, {})).toEqual(failObj);
 			expect(check(types.string as any, {})).toEqual(failObj);
@@ -107,7 +111,7 @@ describe("validation: type rules", () => {
 
 	describe("is int", () => {
 		it("should check int", () => {
-			const { check } = rules.isInt(),
+			const check = getRuleCheck(rules.isInt()),
 				failObj = { isInt: true };
 			expect(check(types.boolean as any, {})).toEqual(failObj);
 			expect(check(types.string as any, {})).toEqual(failObj);
@@ -137,7 +141,7 @@ describe("validation: type rules", () => {
 
 	describe("is date", () => {
 		it("should check date", () => {
-			const { check } = rules.isDate(),
+			const check = getRuleCheck(rules.isDate()),
 				failObj = { isDate: true };
 			expect(check(types.boolean as any, {})).toEqual(failObj);
 			expect(check(types.string as any, {})).toEqual(failObj);
@@ -167,7 +171,7 @@ describe("validation: type rules", () => {
 
 	describe("is array", () => {
 		it("should check array", () => {
-			const { check } = rules.isArray(),
+			const check = getRuleCheck(rules.isArray()),
 				failObj = { isArray: true };
 			expect(check(types.boolean as any, {})).toEqual(failObj);
 			expect(check(types.string as any, {})).toEqual(failObj);
@@ -192,7 +196,7 @@ describe("validation: type rules", () => {
 
 	describe("is set", () => {
 		it("should check set", () => {
-			const { check } = rules.isSet(),
+			const check = getRuleCheck(rules.isSet()),
 				failObj = { isSet: true };
 			expect(check(types.boolean as any, {})).toEqual(failObj);
 			expect(check(types.string as any, {})).toEqual(failObj);
@@ -217,7 +221,7 @@ describe("validation: type rules", () => {
 
 	describe("is map", () => {
 		it("should check map", () => {
-			const { check } = rules.isMap(),
+			const check = getRuleCheck(rules.isMap()),
 				failObj = { isMap: true };
 			expect(check(types.boolean as any, {})).toEqual(failObj);
 			expect(check(types.string as any, {})).toEqual(failObj);
@@ -242,7 +246,7 @@ describe("validation: type rules", () => {
 
 	describe("is object", () => {
 		it("should check object", () => {
-			const { check } = rules.isObject(),
+			const check = getRuleCheck(rules.isObject()),
 				failObj = { isObject: true };
 			expect(check(types.boolean as any, {})).toEqual(failObj);
 			expect(check(types.string as any, {})).toEqual(failObj);
