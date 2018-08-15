@@ -10,12 +10,11 @@ export type ValidatorRawSchema<T, M extends object> = {
 	[K in keyof T]?: ValidatorRawSchemaValue<T[K], M>;
 };
 
-export type RawRuleValue<T, M extends object> = Rule<T, M> | Rules<T, M>;
-
-export type ValidatorRawSchemaValue<T, M extends object> =
-	T extends any[] ? RawRuleValue<T, M> :
-	T extends object ? (ValidatorRawSchema<T, M> | Validator<T>) :
-	RawRuleValue<T, M>;
+export type ValidatorRawSchemaValue<T, M extends object> = (
+	T extends any[] ? never :
+	T extends object ? ValidatorRawSchema<T, M> | Validator<T> :
+	never
+) | Rule<T, M> | Rules<T, M>;
 
 export type BaseValidatorRawSchema<M extends object> = ValidatorRawSchema<M, M>;
 

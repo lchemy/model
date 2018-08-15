@@ -11,7 +11,7 @@ export interface NullableRule<T, M extends object> {
 	nullable: true;
 }
 
-export type Rule<T = any, M extends object = object> = RuleCheckFn<NonNullable<T>, M> | NonNullableRule<T, M> | NullableRule<T, M>;
+export type Rule<T = any, M extends object = object> = RuleCheckFn<NonNullable<T>, M> | NonNullableRule<NonNullable<T>, M> | NullableRule<NonNullable<T>, M>;
 export type Rules<T = any, M extends object = object> = Array<Rule<T, M>>;
 
 export async function checkRules<T, M extends object>(rules: Rules<T, M>, value: T | null | undefined, model: M): Promise<RuleCheckResult> {
@@ -23,7 +23,7 @@ export async function checkRules<T, M extends object>(rules: Rules<T, M>, value:
 			continue;
 		}
 
-		const result = await check(value!, model);
+		const result = await (check as RuleCheckFn<T | null | undefined, M>)(value, model);
 		if (result != null) {
 			out = {
 				...(out as any),
