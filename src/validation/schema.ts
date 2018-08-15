@@ -10,9 +10,12 @@ export type ValidatorRawSchema<T, M extends object> = {
 	[K in keyof T]?: ValidatorRawSchemaValue<T[K], M>;
 };
 
+export type RawRuleValue<T, M extends object> = Rule<T, M> | Rules<T, M>;
+
 export type ValidatorRawSchemaValue<T, M extends object> =
-	(T extends object ? ValidatorRawSchema<T, M> | Validator<T> : unknown) |
-	Rule<T, M> | Rules<T, M>;
+	T extends any[] ? RawRuleValue<T, M> :
+	T extends object ? (ValidatorRawSchema<T, M> | Validator<T>) :
+	RawRuleValue<T, M>;
 
 export type BaseValidatorRawSchema<M extends object> = ValidatorRawSchema<M, M>;
 
@@ -28,7 +31,8 @@ function normalizeSchemaValue<T, M extends object>(value?: ValidatorRawSchemaVal
 		return [];
 	}
 
-	return (Array.isArray(value) ? value : [value]).map((rule) => {
+	const rules = (Array.isArray(value) ? value : [value]) as Array<Rule<T, M> | ValidatorRawSchema<T, M> | Validator<M>>;
+	return rules.map((rule) => {
 		if (typeof rule === "function" || isRule(rule)) {
 			return rule;
 		}
