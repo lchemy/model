@@ -38,7 +38,7 @@ describe("validation: nested rules", () => {
 		});
 
 		it("should check immutable lists", async () => {
-			const check = getRuleCheck(rules.each(rules.min(0)));
+			const check = getRuleCheck(rules.each<number, any>(rules.min(0)));
 
 			expect(await check(Immutable.List([-2, -1, 0, 1, 2]), {})).toEqual({
 				each: true,
@@ -57,7 +57,7 @@ describe("validation: nested rules", () => {
 		});
 
 		it("should check sets", async () => {
-			const check = getRuleCheck(rules.each(rules.min(0)));
+			const check = getRuleCheck(rules.each<number, any>(rules.min(0)));
 
 			const result = await check(new Set([-2, -1, 0, 1, 2]), {}),
 				nested = result!.nested as any[];
@@ -74,7 +74,7 @@ describe("validation: nested rules", () => {
 		});
 
 		it("should check immutable sets", async () => {
-			const check = getRuleCheck(rules.each(rules.min(0)));
+			const check = getRuleCheck(rules.each<number, any>(rules.min(0)));
 
 			const result = await check(Immutable.Set([-2, -1, 0, 1, 2]), {}),
 				nested = result!.nested as any[];
@@ -91,7 +91,7 @@ describe("validation: nested rules", () => {
 		});
 
 		it("should check objects", async () => {
-			const check = getRuleCheck(rules.each(rules.min(0)));
+			const check = getRuleCheck(rules.each<number, any>(rules.min(0)));
 
 			expect(await check({
 				a: -2,
@@ -119,7 +119,7 @@ describe("validation: nested rules", () => {
 		});
 
 		it("should check maps", async () => {
-			const check = getRuleCheck(rules.each(rules.min(0)));
+			const check = getRuleCheck(rules.each<number, any>(rules.min(0)));
 
 			expect(await check(new Map([
 				["a", -2],
@@ -147,7 +147,7 @@ describe("validation: nested rules", () => {
 		});
 
 		it("should check immutable maps", async () => {
-			const check = getRuleCheck(rules.each(rules.min(0)));
+			const check = getRuleCheck(rules.each<number, any>(rules.min(0)));
 
 			expect(await check(Immutable.Map([
 				["a", -2],

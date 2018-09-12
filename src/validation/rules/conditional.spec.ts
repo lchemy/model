@@ -1,5 +1,6 @@
 import { getRuleCheck } from "../rule";
 import * as rules from "../rules";
+import { Validator } from "../validator";
 
 describe("validation: conditional rules", () => {
 	describe("required", () => {
@@ -62,6 +63,32 @@ describe("validation: conditional rules", () => {
 			expect(ifMockCheck).toHaveBeenCalledTimes(0);
 			expect(elseMockCheck).toHaveBeenCalledTimes(2);
 		});
+
+		it("should execute validator if condition passes", async () => {
+			const ifMockCheck = jest.fn().mockReturnValue(null);
+			const validator = new Validator({
+				test: ifMockCheck
+			});
+			const check = getRuleCheck(rules.checkIf(() => true, validator));
+			await check({
+				test: true
+			}, {});
+			expect(ifMockCheck).toHaveBeenCalledTimes(1);
+		});
+
+		it("should execute else validator if condition fails", async () => {
+			const ifMockCheck = jest.fn().mockReturnValue(null),
+				elseMockCheck = jest.fn().mockReturnValue(null);
+			const validator = new Validator({
+				test: elseMockCheck
+			});
+			const check = getRuleCheck(rules.checkIf(() => false, ifMockCheck, validator));
+			await check({
+				test: true
+			}, {});
+			expect(ifMockCheck).toHaveBeenCalledTimes(0);
+			expect(elseMockCheck).toHaveBeenCalledTimes(1);
+		});
 	});
 
 	describe("check switch", () => {
@@ -104,6 +131,20 @@ describe("validation: conditional rules", () => {
 			await check(1, {});
 			expect(switchMockCheck).toHaveBeenCalledTimes(0);
 			expect(defaultMockCheck).toHaveBeenCalledTimes(1);
+		});
+
+		it("should execute validator based on mapper results if matched", async () => {
+			const switchMockCheck = jest.fn().mockReturnValue(null);
+			const validator = new Validator({
+				test: switchMockCheck
+			});
+			const check = getRuleCheck(rules.checkSwitch(() => "a", {
+				a: validator
+			}));
+			await check({
+				test: true
+			}, {});
+			expect(switchMockCheck).toHaveBeenCalledTimes(1);
 		});
 	});
 });

@@ -1,4 +1,7 @@
 import { Rule, Rules, checkRules } from "../rule";
+import { Validator } from "../validator";
+
+export type RuleSet<T, M extends object> = Rules<T, M> | Rule<T, M> | (T extends object ? Validator<T> : never);
 
 const requiredRule = {
 	check: (value) => value != null ? null : { required: true },
@@ -10,13 +13,20 @@ export function required(): Rule {
 
 export function checkIf<T, M extends object>(
 	condition: (value: T | null | undefined, model: M) => boolean,
-	rulesInit: Rules<T, M> | Rule<T, M>,
-	elseRulesInit?: Rules<T, M> | Rule<T, M>
+	rulesInit: RuleSet<T, M>,
+	elseRulesInit?: RuleSet<T, M>
 ): Rule<T, M> {
-	const rules = Array.isArray(rulesInit) ? rulesInit : [rulesInit];
+	type CheckIfRules = Rules<T, M> | (T extends object ? Validator<T> : never);
 
-	let elseRules: Rules<T, M> | undefined;
-	if (Array.isArray(elseRulesInit)) {
+	let rules: CheckIfRules;
+	if (rulesInit instanceof Validator || Array.isArray(rulesInit)) {
+		rules = rulesInit;
+	} else {
+		rules = [rulesInit];
+	}
+
+	let elseRules: CheckIfRules | undefined;
+	if (elseRulesInit instanceof Validator || Array.isArray(elseRulesInit)) {
 		elseRules = elseRulesInit;
 	} else if (elseRulesInit != null) {
 		elseRules = [elseRulesInit];
@@ -24,12 +34,19 @@ export function checkIf<T, M extends object>(
 
 	return {
 		check: (value, model) => {
+			let check: CheckIfRules;
 			if (condition(value, model)) {
-				return checkRules(rules, value, model);
+				check = rules;
 			} else if (elseRules != null) {
-				return checkRules(elseRules, value, model);
+				check = elseRules;
 			} else {
 				return null;
+			}
+
+			if (check instanceof Validator) {
+				return check.validate(value!);
+			} else {
+				return checkRules(check, value, model);
 			}
 		},
 		nullable: true
@@ -38,8 +55,8 @@ export function checkIf<T, M extends object>(
 
 export function checkSwitch<T, M extends object>(
 	mapper: (value: T | null | undefined, model: M) => string,
-	ruleSet: { [key: string]: Rules<T, M> | Rule<T, M> | undefined },
-	defaultRulesInit?: Rules<T, M> | Rule<T, M>
+	ruleSet: { [key: string]: RuleSet<T, M> | undefined },
+	defaultRulesInit?: RuleSet<T, M>
 ): Rule<T, M> {
 	return {
 		check: (value, model) => {
@@ -54,8 +71,12 @@ export function checkSwitch<T, M extends object>(
 				}
 			}
 
-			const rules = Array.isArray(rulesInit) ? rulesInit : [rulesInit];
-			return checkRules(rules, value, model);
+			if (rulesInit instanceof Validator) {
+				return rulesInit.validate(value!);
+			} else {
+				const rules = Array.isArray(rulesInit) ? rulesInit : [rulesInit];
+				return checkRules(rules, value, model);
+			}
 		},
 		nullable: true
 	};
