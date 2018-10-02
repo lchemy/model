@@ -1,3 +1,4 @@
+import { Rule } from "./rule";
 import { normalizeSchema } from "./schema";
 import { Validator } from "./validator";
 
@@ -9,7 +10,7 @@ describe("validation: schema", () => {
 			name: "rule",
 			check: ruleFn,
 			nullable: false
-		};
+		} as Rule<any>;
 
 		const validator = new Validator({});
 
